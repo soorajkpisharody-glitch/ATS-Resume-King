@@ -19,6 +19,14 @@ except:
 if GOOGLE_API_KEY:
     genai.configure(api_key=GOOGLE_API_KEY)
 
+# Payment Details
+OWNER_NAME = "Sooraj"
+WHATSAPP_NUMBER = "0555578736"
+GOOGLE_PAY = "918075044214"
+BOTIM_PAY = "971562796967"
+PRICE_AED = "AED 25"
+PRICE_INR = "₹500"
+
 try:
     st.markdown("<h1 style='text-align:center;color:#4F46E5;'>⚡ ATS Resume King</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center;color:#6B7280;'>AI-Powered Resume Builder | ATS Scorer | WhatsApp CV Delivery</p>", unsafe_allow_html=True)
@@ -27,7 +35,7 @@ try:
     app_mode = st.sidebar.selectbox("Select Module", [
         "1. Resume Builder & ATS Scorer",
         "2. AI Career Chatbot",
-        "3. Payment & WhatsApp Dispatch",
+        "3. Payment & Get CV",
         "4. Admin Leads Data",
         "5. System Status"
     ])
@@ -77,7 +85,7 @@ try:
                                 "Status": "Generated"
                             }
                             st.session_state.leads_data.append(lead)
-                            st.info("💡 Go to Module 3 to receive your CV on WhatsApp!")
+                            st.warning("💡 To receive your full CV — Go to Module 3 and complete payment!")
                         except Exception as e:
                             st.error("API Error: " + str(e))
                 else:
@@ -104,26 +112,38 @@ try:
                 except Exception as e:
                     st.error("Chat error. Please try again.")
 
-    elif app_mode == "3. Payment & WhatsApp Dispatch":
-        st.subheader("💳 Payment & WhatsApp CV Delivery")
+    elif app_mode == "3. Payment & Get CV":
+        st.subheader("💳 Complete Payment & Receive Your CV")
+        st.markdown("### 💰 Service Charge: " + PRICE_AED + " | " + PRICE_INR)
+        st.divider()
+
         col1, col2 = st.columns(2)
+
         with col1:
-            st.markdown("### Payment Gateway")
-            user_phone = st.text_input("WhatsApp Number", placeholder="+971500000000")
-            payment_option = st.selectbox("Payment Method", ["Stripe / Card", "Razorpay / UPI", "Apple Pay / PayTabs"])
-            if st.button("✅ Complete Payment & Send CV"):
-                if user_phone:
-                    st.success("Payment Confirmed!")
-                    st.balloons()
-                    st.markdown(
-                        "> **Automation Agent Log:**\n"
-                        "> Payment via " + payment_option + " confirmed.\n"
-                        "> CV dispatched to **" + user_phone + "** via WhatsApp API!"
-                    )
-                else:
-                    st.warning("Enter your WhatsApp number!")
+            st.markdown("### 🇮🇳 India Payment — Google Pay")
+            st.info("UPI / Google Pay / PhonePe")
+            st.markdown("**Send " + PRICE_INR + " to:**")
+            st.code(GOOGLE_PAY)
+            st.markdown("📱 **Google Pay | PhonePe | Paytm** — same number")
+            wa_msg_india = "Hi Sooraj, I have paid " + PRICE_INR + " via Google Pay for ATS Resume King service. Please send my CV."
+            wa_link_india = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + wa_msg_india.replace(" ", "%20")
+            st.markdown("[✅ Click here to confirm payment on WhatsApp](" + wa_link_india + ")")
+
         with col2:
-            st.info("How it works:\n1. Payment confirmed → webhook fires\n2. Make.com processes the request\n3. PDF sent to your WhatsApp instantly")
+            st.markdown("### 🇦🇪 UAE Payment — Botim Pay")
+            st.info("Botim Pay / Bank Transfer")
+            st.markdown("**Send " + PRICE_AED + " to:**")
+            st.code(BOTIM_PAY)
+            st.markdown("📱 **Botim Pay** — instant transfer")
+            wa_msg_uae = "Hi Sooraj, I have paid " + PRICE_AED + " via Botim Pay for ATS Resume King service. Please send my CV."
+            wa_link_uae = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + wa_msg_uae.replace(" ", "%20")
+            st.markdown("[✅ Click here to confirm payment on WhatsApp](" + wa_link_uae + ")")
+
+        st.divider()
+        st.success("After payment — WhatsApp us with your payment screenshot. CV will be delivered within 30 minutes! ⚡")
+
+        st.markdown("### 📲 Direct WhatsApp Contact")
+        st.markdown("[💬 Chat with us on WhatsApp](https://wa.me/" + WHATSAPP_NUMBER + ")")
 
     elif app_mode == "4. Admin Leads Data":
         st.subheader("📊 Leads & Analytics")
@@ -138,7 +158,14 @@ try:
     elif app_mode == "5. System Status":
         st.subheader("🛡️ System Status")
         st.success("🟢 All Systems Operational")
-        st.markdown("- ✅ AI Resume Engine: Online\n- ✅ Gemini API: Connected\n- ✅ WhatsApp Dispatch: Ready\n- ✅ Self-Healing Handler: Active\n- 🟡 Payment Gateway: Simulation Mode")
+        st.markdown(
+            "- ✅ AI Resume Engine: Online\n"
+            "- ✅ Gemini API: Connected\n"
+            "- ✅ Google Pay: Active (" + GOOGLE_PAY + ")\n"
+            "- ✅ Botim Pay: Active (" + BOTIM_PAY + ")\n"
+            "- ✅ WhatsApp Support: Active\n"
+            "- ✅ Self-Healing Handler: Active"
+        )
 
 except Exception as critical_error:
     st.error("⚠️ System error detected. Auto-recovery active.")
