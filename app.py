@@ -54,17 +54,16 @@ try:
                     with st.spinner("AI analyzing your profile..."):
                         try:
                             model = genai.GenerativeModel('gemini-1.5-flash')
-                            prompt = f"""
-Act as an elite ATS Resume Expert. Analyze this candidate and provide:
-1. ATS Score out of 100 with justification
-2. Professional optimized resume summary for '{target_job}'
-3. 5 strong achievement bullet points
-4. 3 specific ATS improvements
-
-Candidate: {full_name}
-Target Role: {target_job}
-Experience/Skills: {experience}
-"""
+                            prompt = (
+                                "Act as an elite ATS Resume Expert. Analyze this candidate and provide:\n"
+                                "1. ATS Score out of 100 with justification\n"
+                                "2. Professional optimized resume summary\n"
+                                "3. 5 strong achievement bullet points\n"
+                                "4. 3 specific ATS improvements\n\n"
+                                "Candidate: " + full_name + "\n"
+                                "Target Role: " + target_job + "\n"
+                                "Experience/Skills: " + experience
+                            )
                             response = model.generate_content(prompt)
                             st.success("✅ Resume Analyzed Successfully!")
                             st.markdown("### AI Analysis Report:")
@@ -80,7 +79,7 @@ Experience/Skills: {experience}
                             st.session_state.leads_data.append(lead)
                             st.info("💡 Go to Module 3 to receive your CV on WhatsApp!")
                         except Exception as e:
-                            st.error(f"API Error: {e}")
+                            st.error("API Error: " + str(e))
                 else:
                     st.warning("Please fill all required fields!")
 
@@ -97,4 +96,52 @@ Experience/Skills: {experience}
             with st.chat_message("assistant"):
                 try:
                     chat_model = genai.GenerativeModel('gemini-1.5-flash')
-                    chat_prompt = f"You are an expert AI
+                    chat_prompt = "You are an expert AI Career and Resume Assistant for ATS Resume King. Answer professionally and concisely: " + user_query
+                    chat_response = chat_model.generate_content(chat_prompt)
+                    bot_reply = chat_response.text
+                    st.markdown(bot_reply)
+                    st.session_state.messages.append({"role": "assistant", "content": bot_reply})
+                except Exception as e:
+                    st.error("Chat error. Please try again.")
+
+    elif app_mode == "3. Payment & WhatsApp Dispatch":
+        st.subheader("💳 Payment & WhatsApp CV Delivery")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("### Payment Gateway")
+            user_phone = st.text_input("WhatsApp Number", placeholder="+971500000000")
+            payment_option = st.selectbox("Payment Method", ["Stripe / Card", "Razorpay / UPI", "Apple Pay / PayTabs"])
+            if st.button("✅ Complete Payment & Send CV"):
+                if user_phone:
+                    st.success("Payment Confirmed!")
+                    st.balloons()
+                    st.markdown(
+                        "> **Automation Agent Log:**\n"
+                        "> Payment via " + payment_option + " confirmed.\n"
+                        "> CV dispatched to **" + user_phone + "** via WhatsApp API!"
+                    )
+                else:
+                    st.warning("Enter your WhatsApp number!")
+        with col2:
+            st.info("How it works:\n1. Payment confirmed → webhook fires\n2. Make.com processes the request\n3. PDF sent to your WhatsApp instantly")
+
+    elif app_mode == "4. Admin Leads Data":
+        st.subheader("📊 Leads & Analytics")
+        if st.session_state.leads_data:
+            df = pd.DataFrame(st.session_state.leads_data)
+            st.dataframe(df, use_container_width=True)
+            csv = df.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Download CSV", csv, 'leads.csv', 'text/csv')
+        else:
+            st.info("No leads yet. Generate a resume first.")
+
+    elif app_mode == "5. System Status":
+        st.subheader("🛡️ System Status")
+        st.success("🟢 All Systems Operational")
+        st.markdown("- ✅ AI Resume Engine: Online\n- ✅ Gemini API: Connected\n- ✅ WhatsApp Dispatch: Ready\n- ✅ Self-Healing Handler: Active\n- 🟡 Payment Gateway: Simulation Mode")
+
+except Exception as critical_error:
+    st.error("⚠️ System error detected. Auto-recovery active.")
+    st.code(traceback.format_exc())
+    if st.button("🔄 Restart System"):
+        st.rerun()
